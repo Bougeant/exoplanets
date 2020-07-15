@@ -69,7 +69,7 @@ class TestAstroDataTable:
         assert df.equals(expected_df)
         with open(filename, "r") as csv_file:
             csv_contents = csv_file.read()
-        assert csv_contents == "kepid,tm_designation\n8113154,2MASS J19473063+4356298\n"
+        assert csv_contents == "Kepler ID,2MASS ID\n8113154,2MASS J19473063+4356298\n"
 
     def test_read_kepler_data_read_from_file(self, tmp_path):
         filename = tmp_path / "my_file.csv"
