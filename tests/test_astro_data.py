@@ -71,7 +71,7 @@ class TestAstroDataTable:
             csv_contents = csv_file.read()
         assert csv_contents == "kepid,tm_designation\n8113154,2MASS J19473063+4356298\n"
 
-    def test_read_kepler_data(self, tmp_path):
+    def test_read_kepler_data_read_from_file(self, tmp_path):
         filename = tmp_path / "my_file.csv"
         pd.DataFrame({"A": [1, 2, 3]}).to_csv(filename, index=False)
         df = astro_data.read_kepler_data(
