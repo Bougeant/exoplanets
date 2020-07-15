@@ -2,6 +2,7 @@
 
 """ Functions to get table and light curves data using astroquery. """
 
+import logging
 import os
 
 import pandas as pd
@@ -39,11 +40,13 @@ def read_kepler_data(table, columns=None, where=None, filename=None):
     """
     columns, where = get_default_params(table, columns, where)
     if not filename or not os.path.isfile(filename):
+        logging.info("Reading Kepler data from table {}".format(table))
         kepler_data = get_kepler_data(table, columns, where)
         df = kepler_data.to_pandas()
         df = rename_columns(df, columns)
         record_dataframe(df, filename)
     else:
+        logging.info("Reading Kepler data from {}".format(filename))
         df = pd.read_csv(filename)
     return df
 
