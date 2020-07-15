@@ -3,6 +3,7 @@
 """ Tests for exoplanets.astro_data """
 
 import astropy
+import pandas as pd
 
 from exoplanets import astro_data
 
@@ -33,3 +34,15 @@ class TestAstroDataTable:
         assert isinstance(kepler_data, astropy.table.QTable)
         assert kepler_data.keys() == ["kepid"]
         assert kepler_data["kepid"].tolist() == [8113154]
+
+    def test_rename_columns(self):
+        df = pd.DataFrame({"A": [1, 2, 3]})
+        df = astro_data.rename_columns(df, columns={"A": "B"})
+        expected_df = pd.DataFrame({"B": [1, 2, 3]})
+        assert df.equals(expected_df)
+
+    def test_rename_columns_list(self):
+        df = pd.DataFrame({"A": [1, 2, 3]})
+        expected_df = df.copy()
+        df = astro_data.rename_columns(df, columns=["A"])
+        assert df.equals(expected_df)
