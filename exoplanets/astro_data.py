@@ -66,7 +66,7 @@ DEFAULT_PARAMS = {
             "koi_kepmag": "Kepler-band (mag)",
             "koi_vet_date": "Vetting Status Date",
         },
-        "where": None,
+        "where": "st_quarters like '%1%'",
     },
 }
 
