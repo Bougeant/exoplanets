@@ -187,4 +187,7 @@ def record_dataframe(df, filename):
             The location in which to save the DataFrame into a .csv format.
     """
     if filename:
+        path = os.path.dirname(filename)
+        if not os.path.exists(path):
+            os.makedirs(path, exist_ok=True)
         df.to_csv(filename, index=False)
