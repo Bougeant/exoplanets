@@ -8,6 +8,8 @@ import os
 import pandas as pd
 from astroquery.nasa_exoplanet_archive import NasaExoplanetArchive
 
+from exoplanets.default_data_params import DEFAULT_PARAMS
+
 
 def read_kepler_data(table, columns=None, where=None, filename=None):
     """ Returns a pandas DataFrame containing the requested data from the
