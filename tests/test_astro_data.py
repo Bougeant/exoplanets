@@ -2,6 +2,8 @@
 
 """ Tests for exoplanets.astro_data """
 
+import os
+
 import astropy
 import pandas as pd
 
@@ -82,3 +84,13 @@ class TestAstroDataTable:
         )
         expected_df = pd.DataFrame({"A": [1, 2, 3]})
         assert df.equals(expected_df)
+
+    def test_download_light_curves(self, tmp_path):
+        targets = [8113154]
+        download_dir = tmp_path / "mastDownload/Kepler"
+        download_dir.mkdir(parents=True, exist_ok=True)
+        astro_data.download_light_curves(targets, dir=str(tmp_path), prefix="KIC")
+        assert os.listdir(download_dir) == ["kplr008113154_lc_Q111111111111111111"]
+        assert (
+            len(os.listdir(download_dir / "kplr008113154_lc_Q111111111111111111")) == 18
+        )
