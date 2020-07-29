@@ -4,9 +4,13 @@
 
 import logging
 import os
+import warnings
 
 import pandas as pd
 from astroquery.nasa_exoplanet_archive import NasaExoplanetArchive
+from lightkurve import search_lightcurvefile
+from lightkurve.utils import LightkurveWarning
+from tqdm import tqdm
 
 from exoplanets.default_data_params import DEFAULT_PARAMS
 
@@ -131,3 +135,21 @@ def record_dataframe(df, filename):
         if not os.path.exists(path):
             os.makedirs(path, exist_ok=True)
         df.to_csv(filename, index=False)
+
+
+def download_light_curves(targets, dir="./data", prefix="KIC"):
+    """
+    """
+    lightkurve_logger = logging.getLogger("lightkurve")
+    lightkurve_logger.setLevel(logging.ERROR)
+    for target in tqdm(targets):
+        download_path = os.path.join(dir, "mastDownload/Kepler")
+        target_dir = [target for x in os.listdir(download_path) if str(target) in x]
+        if not target_dir:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", LightkurveWarning)
+                search = search_lightcurvefile(
+                    target=prefix + str(target), mission="Kepler"
+                )
+                search.download_all(download_dir=dir)
+    lightkurve_logger.setLevel(logging.INFO)
