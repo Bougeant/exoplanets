@@ -89,6 +89,6 @@ DEFAULT_PARAMS = {
             "st_rad": "Stellar Radius [Solar radii]",
             "pl_facility": "Discovery Facility",
         },
-        "where": "st_quarters like '%1%'",
+        "where": None,
     },
 }
