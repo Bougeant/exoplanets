@@ -15,6 +15,8 @@ jupyter:
 
 # Hunting exoplanets
 
+<img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Kepler186f-ArtistConcept-20140417.jpg">
+
 ```python
 %load_ext autoreload
 %autoreload 2
@@ -49,6 +51,10 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 ```python
 df = astro_data.read_kepler_data(table="q1_q17_dr25_stellar", filename="./data/kepler_stellar_data.csv")
+```
+
+```python
+df.sample(5)
 ```
 
 ### Displaying distribution of Kepler target stars as a function of magnitude and mass.
@@ -131,6 +137,51 @@ plt.ylabel("Number of KOI")
 sns.despine()
 ```
 
+## Exploring Confirmed Planets data
+
+
+### Reading Confirmed Planets data
+
+```python
+df_planets = astro_data.read_kepler_data(table="exoplanets", filename="./data/confirmed_planets.csv")
+```
+
+```python
+df_planets.sample(5)
+```
+
+### Planet mass as a function of orbiting distance
+
+```python
+solar_system = pd.DataFrame(
+    {
+        "Orbit [au]": [0.387098, 0.723332, 1.0, 1.523679, 5.2044, 9.5826, 19.2184, 30.11, 39.482],
+        "Mass [Jupiter mass]": [0.00017, 0.00256, 0.00315, 0.00034, 1.0, 0.299, 0.046, 0.054, 0.00218*0.00315],
+        "Color": ["grey", "lemonchiffon", "royalblue", "coral", "peachpuff", "gold", "powderblue", "royalblue", "grey"],
+        "Size": [10, 30, 30, 20, 120, 90, 60, 60, 5]
+    },
+    index=["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"]
+)
+```
+
+```python
+plt.figure(figsize=(16, 10))
+ax = sns.scatterplot(df_planets["Orbit Semi-Major Axis [au])"], df_planets["Planet Mass or M*sin(i) [Jupiter mass]"], s=10, linewidth=0, color="white", label="Known exoplanets")
+for index, row in solar_system.iterrows():
+    sns.scatterplot([row["Orbit [au]"]], [row["Mass [Jupiter mass]"]], s=row["Size"], linewidth=0, color=row["Color"], label=index)
+ax.set_facecolor("black")
+plt.xlim(0.005, 1000)
+plt.xscale("log")
+plt.ylim(0.0001, 100)
+plt.yscale("log")
+plt.ylabel("Planet Mass [Jupiter mass]")
+plt.xlabel("Orbit Semi-Major Axis [au]")
+legend = plt.legend(frameon=False)
+plt.setp(legend.get_texts(), color='w')
+
+plt.show()
+```
+
 ## Exploring light curves: example of exoplanet Kepler-167e (KIC 3239945)
 
 
@@ -142,16 +193,12 @@ lc = lc_all.PDCSAP_FLUX.stitch()
 lc = lc.to_pandas()
 ```
 
-```python
-os.mkdir()
-```
-
-### Light curve for Kepler-167e's host star (first 90 days of data)
+### Light curve for Kepler-167e's host star
 
 ```python
 fig = plt.figure(figsize=(16, 8))
-sns.scatterplot(lc_all[0].SAP_FLUX.to_pandas()["time"], lc_all[0].SAP_FLUX.to_pandas()["flux"], s=20, linewidth=0, label="Raw flux (SAP)")
-sns.scatterplot(lc_all[0].PDCSAP_FLUX.to_pandas()["time"], lc_all[0].PDCSAP_FLUX.to_pandas()["flux"], s=20, linewidth=0, label="Pre-conditioned flux (PDCSAP)")
+sns.scatterplot(lc_all[3].SAP_FLUX.to_pandas()["time"], lc_all[3].SAP_FLUX.to_pandas()["flux"], s=20, linewidth=0, label="Raw flux (SAP)")
+sns.scatterplot(lc_all[3].PDCSAP_FLUX.to_pandas()["time"], lc_all[3].PDCSAP_FLUX.to_pandas()["flux"], s=20, linewidth=0, label="Pre-conditioned flux (PDCSAP)")
 sns.despine()
 plt.legend(frameon=False)
 plt.xlabel("Time (days)")
@@ -170,6 +217,23 @@ plt.xlabel("Time (days)")
 plt.ylabel("Normalized flux")
 plt.legend()
 sns.despine()
+```
+
+## Selecting light curves to download
+
+```python
+confirmed = df_koi[df_koi["Exoplanet Archive Disposition"] == "CONFIRMED"]["KIC Identification Number"].unique().tolist()
+len(confirmed)
+```
+
+```python
+np.random.seed(1)
+no_tce = df[df["Number of Associated TCEs"] == 0]["KIC Identification Number"].sample(5000).tolist()
+len(no_tce)
+```
+
+```python
+astro_data.download_light_curves(targets=confirmed + no_tce, dir="./data")
 ```
 
 ```python
