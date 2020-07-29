@@ -138,7 +138,15 @@ def record_dataframe(df, filename):
 
 
 def download_light_curves(targets, dir="./data", prefix="KIC"):
-    """
+    """ Downloads the Kepler light curves for the specified targets.
+
+        :param list targets:
+            The list of targets IDs (kepid) for which to download the light curves.
+        :param dir str:
+            The directory in which to download the light curves. The mastDownload and
+            Kepler subdirectories are created automatically by lightkurve.
+        :param str prefix:
+            The prefix for the targets ID (to avoid confusion with non-Kepler targets).
     """
     lightkurve_logger = logging.getLogger("lightkurve")
     lightkurve_logger.setLevel(logging.ERROR)
